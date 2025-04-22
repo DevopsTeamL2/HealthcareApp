@@ -10,12 +10,26 @@ app.set('views', path.join(__dirname, 'views'));
 // Middleware to serve static files (like CSS, JavaScript, images)
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(express.json());
+
 // Define routes here
+
+app.post('/send-email', (req, res) => {
+  const { name, email, message } = req.body;
+  console.log('Form Data:', { name, email, message });
+  res.status(200).json({ success: true });
+});
+
 
 // Home route
 app.get('/', (req, res) => {
     res.render('index', { username: 'Hetvi' });
   });
+
+  // Success route
+app.get('/success', (req, res) => {
+  res.render('success', { username: 'Hetvi' });
+});
   
   // Contact route
   app.get('/contact', (req, res) => {

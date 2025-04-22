@@ -1,0 +1,126 @@
+/* Reset and General Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body, html {
+    font-family: Arial, sans-serif;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* Apply the background image globally */
+    background: url('https://cdn.pixabay.com/photo/2019/07/30/15/57/dentist-4373290_1280.jpg') no-repeat center center/cover;
+    color: #333;
+  }
+  
+  /* Container for the Split Layout */
+  .contact-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  /* Left: Overlay Section */
+  .contact-image {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .contact-image .overlay {
+    text-align: center;
+    color: #fff;
+    padding: 20px;
+  }
+  
+  .contact-image .overlay h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  .contact-image .overlay p {
+    font-size: 1rem;
+  }
+  
+  /* Right: Contact Form Section with Transparent White Background */
+  .contact-form-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+  }
+  
+  .contact-form-section header {
+    margin-bottom: 20px;
+  }
+  
+  .contact-form-section header h1 {
+    color: #6a0dad;
+    margin-bottom: 10px;
+  }
+  
+  .contact-form-section header p {
+    color: #555;
+  }
+  
+  .contact-form-section form {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 25px; /* Rounded edges for all textboxes */
+  outline: none; /* Removes the default focus border */
+  font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border: 1px solid #6a0dad; /* Adds a purple border when focused */
+  box-shadow: 0 0 5px rgba(106, 13, 173, 0.5); /* Subtle glow on focus */
+}
+  button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #6a0dad;
+    color: #fff;
+    border: none;
+    border-radius: 25px; /* Rounded edges */
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #5a0c9d;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .contact-container {
+      flex-direction: column;
+    }
+    
+    .contact-image {
+      height: 200px;
+    }
+  }
