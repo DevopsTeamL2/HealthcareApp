@@ -1,11 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Notification App</title>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', 'Segoe UI', Geneva, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://cdn.pixabay.com/photo/2019/07/30/15/57/dentist-4373290_1280.jpg') no-repeat center center/cover; /* Full-page background image */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay for contrast */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            backdrop-filter: blur(5px); /* Adds a frosted glass effect */
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 1em;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type=email], select, input[type=text] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent for contrast */
+            color: black;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #81c784; /* Cool green button */
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #4caf50; /* Darker green on hover */
+        }
+
+        #customMessage {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #status {
+            margin-top: 15px;
+            font-size: 1em;
+            color: #fff;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 1.2em;
+            }
+
+            input[type=email], select, input[type=text], button {
+                font-size: 0.9em;
+                padding: 8px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>EMERGENCY</h1>
-  <!-- Additional content here -->
+    <div class="container">
+        <h2>Send Medical Notification</h2>
+        <label for="email">Recipient Email:</label>
+        <input type="email" id="email" placeholder="Enter email" required>
+        
+        <label for="message">Select Message:</label>
+        <select id="message" onchange="toggleCustomMessage()">
+            <option value="Help, Am Having seizure">Help, Am Having seizure</option>
+            <option value="Faint Attack">Faint Attack</option>
+            <option value="I can't feel my legs">I can't feel my legs.</option>
+            <option value="other">Other (Custom Message)</option>
+        </select>
+
+        <!-- Custom message input field -->
+        <div id="customMessage">
+            <label for="customMessageInput">Enter your custom message:</label>
+            <input type="text" id="customMessageInput" placeholder="Type your message here">
+        </div>
+
+        <button onclick="sendEmail()">Send</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        (function(){
+            emailjs.init("KeIg2pCjxrol_35ZI"); // Replace with your EmailJS Public Key
+        })();
+
+        function toggleCustomMessage() {
+            const messageSelect = document.getElementById('message');
+            const customMessageDiv = document.getElementById('customMessage');
+
+            if (messageSelect.value === 'other') {
+                customMessageDiv.style.display = 'block';
+            } else {
+                customMessageDiv.style.display = 'none';
+            }
+        }
+
+        function sendEmail() {
+            const email = document.getElementById('email').value;
+            const messageSelect = document.getElementById('message');
+            const customMessageInput = document.getElementById('customMessageInput');
+            let message;
+
+            if (!email) {
+                document.getElementById('status').innerText = 'Please enter a valid email!';
+                return;
+            }
+
+            if (messageSelect.value === 'other') {
+                message = customMessageInput.value.trim();
+                if (!message) {
+                    document.getElementById('status').innerText = 'Please enter a custom message!';
+                    return;
+                }
+            } else {
+                message = messageSelect.value;
+            }
+
+            const templateParams = {
+                to_email: email,
+                message: message
+            };
+
+            emailjs.send("service_95nptbn", "template_nr9lvbg", templateParams)
+                .then(response => {
+                    document.getElementById('status').innerText = 'Notification sent successfully!';
+                }, error => {
+                    document.getElementById('status').innerText = 'Try again';
+                    console.error('Error:', error);
+                });
+        }
+    </script>
 </body>
 </html>
