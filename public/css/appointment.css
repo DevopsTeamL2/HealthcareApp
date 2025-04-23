@@ -41,6 +41,23 @@ html, body {
     height: auto;
     position: relative;
   }
+  .back-btn {
+    margin-top: 10px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .back-btn:hover {
+    background-color: #5a6268;
+  }
+  
   
   .close-btn {
     position: absolute;
