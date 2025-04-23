@@ -1,11 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Home</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Medical Appointment</title>
+  <link rel="stylesheet" href="/css/appointment.css" />
 </head>
 <body>
-  <h1>APPOINTMENT</h1>
-  <!-- Additional content here -->
+  <div class="page-container">
+    <div class="background-overlay">
+      <div class="booking-form-container">
+        <button class="close-btn">&times;</button>
+        <h2>Book Appointment</h2>
+        <p>Welcome back! Your details are pre-filled below. Just pick a date and confirm.</p>
+        <form>
+          <label for="fullname">Full Name</label>
+          <input type="text" id="fullname" value="Nachy Josh" required>
+
+          <label for="email">Email</label>
+          <input type="email" id="email" value="nachy@example.com" required>
+
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" value="+2348012345678" required>
+
+          <label for="datetime">Choose Date & Time</label>
+          <input type="datetime-local" id="datetime" required>
+
+          <label for="details">Reason for Visit</label>
+          <textarea id="details" rows="3">Routine medical check-up</textarea>
+
+          <button type="submit" class="submit-btn">Book Appointment</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
+
