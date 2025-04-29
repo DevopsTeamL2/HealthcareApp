@@ -52,6 +52,18 @@ app.get('/success', (req, res) => {
   res.render('success', { username: 'Guest' });
 });
 
+app.get('/index', (req, res) => {
+  res.render('index', { username: 'Guest' });
+});
+
+app.get('/login', (req, res) => {
+  res.render('login', { username: 'Guest' });
+});
+
+app.get('/forgotpassword', (req, res) => {
+  res.render('forgotpassword', { username: 'Guest' });
+});
+
 app.get('/contact', (req, res) => {
   res.render('contact', { username: 'Guest' });
 });
