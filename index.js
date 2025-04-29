@@ -1,7 +1,24 @@
-const express = require('express');
+import express from 'express'
+import path from 'path'
+import nodemailer from 'nodemailer'
+import mongoose from 'mongoose'
+import { MongoClient } from 'mongodb';
+
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
 const app = express();
-const path = require('path');
-const nodemailer = require('nodemailer');
+const { Schema, model } = mongoose;
+
+
+// Replace with your actual credentials
+const uri = "mongodb+srv://healthcareapp:GroupL2@healthcareapp.6zjsyou.mongodb.net/?retryWrites=true&w=majority&appName=HealthcareApp";
+mongoose.connect(uri)
+
+const client = new MongoClient(uri);
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -11,6 +28,65 @@ app.set('views', path.join(__dirname, 'views'));
 // Middleware to serve static files (like CSS, JavaScript, images)
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json()); // Needed to parse JSON body from frontend
+
+
+const blogSchema = new Schema({
+  title: String,
+  slug: String,
+  published: Boolean,
+  author: String,
+  content: String,
+  tags: [String],
+  createdAt: Date,
+  updatedAt: Date,
+  comments: [{
+    user: String,
+    content: String,
+    votes: Number
+  }]
+});
+
+const Blog = model('Blog', blogSchema);
+
+
+// Create a new blog post object
+const article = new Blog({
+  title: 'POST 2!',
+  slug: 'awesome-post',
+  published: true,
+  content: 'This is the best post ever',
+  tags: ['featured', 'announcement'],
+});
+// Insert the article in our MongoDB database
+await article.save();
+
+const retrievedData = await Blog.findById("6810b41ac3f663168ad6f5eb").exec();
+console.log(retrievedData);
+
+const blog = await Blog.exists({ title: 'POST !' })
+if(blog){
+  console.log("ESITS!!!!")
+
+  console.log(blog)
+}else {
+  console.log("DOES NOT EXITST")
+}
+
+
+
+// connect to MongoDB
+async function connectToMongoDB() {
+  try {
+      await client.connect();
+      console.log("✅ Connected to MongoDB Atlas!");
+  } catch (err) {
+      console.error("❌ Connection failed:", err);
+  } finally {
+      await client.close();
+  }
+}
+
+connectToMongoDB();
 
 // ✅ Email sending route
 app.post('/send-email', async (req, res) => {
