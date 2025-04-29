@@ -84,6 +84,10 @@ app.get('/appointment', (req, res) => {
   res.render('appointment', { username: 'Guest' });
 });
 
+app.get('/landingpage', (req, res) => {
+  res.render('landingpage', { username: 'Guest' });
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
