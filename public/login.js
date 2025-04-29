@@ -34,7 +34,7 @@ form.addEventListener('submit', (e) => {
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => { // On successful login
             const user = userCredential.user; // Get the user object from the authentication response 
-            window.location.href = "/DevOpsProject/homePage/LandingPage.html"; // Redirect the user to the home page after successful login
+            window.location.href = "/landingpage"; // Redirect the user to the home page after successful login
         })
         .finally(() => {
             submitButton.disabled = false;  // Re-enable the submit button after the login attempt (regardless of success or failure)

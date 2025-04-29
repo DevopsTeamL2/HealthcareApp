@@ -37,7 +37,7 @@ form.addEventListener('submit', (e) => {
             // If the email is successfully sent, show an alert to inform the user
             alert("Password reset link sent to your email.");
             // Redirect the user to the login page after sending the reset link
-            window.location.href = "login.ejs";
+            window.location.href = "/login";
         })
         .catch((error) => {
             // If an error occurs (e.g., invalid email), show an error message
