@@ -7,6 +7,7 @@ import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com
 const firebaseConfig = {
     apiKey: "AIzaSyAANjSu4SxpEelQ4I4Hq4lT5NmtrF1sW0k",
     authDomain: "devopsproject-1ea1e.firebaseapp.com",
+    databaseURL: "https://devopsproject-1ea1e-default-rtdb.firebaseio.com",
     projectId: "devopsproject-1ea1e",
     storageBucket: "devopsproject-1ea1e.firebasestorage.app",
     messagingSenderId: "298538714309",
