@@ -100,53 +100,6 @@ async function connectToMongoDB() {
 
 connectToMongoDB();
 
-// Email sending route
-
-app.post('/forgotpassword', async (req, res) => {
-  const { email } = req.body;
-  
-  try {
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(400).json({ error: 'Email not found' });
-    }
-
-    // Generate a reset token (use crypto for a secure token)
-    const resetToken = crypto.randomBytes(20).toString('hex');
-    const resetTokenExpiration = Date.now() + 3600000; // 1 hour expiration
-
-    // Save the reset token and expiration time in the database
-    user.resetToken = resetToken;
-    user.resetTokenExpiration = resetTokenExpiration;
-    await user.save();
-
-    // Send the reset link with the token
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'your-email@gmail.com',
-        pass: 'your-email-password'
-      }
-    });
-
-    const mailOptions = {
-      from: 'your-email@gmail.com',
-      to: user.email,
-      subject: 'Password Reset',
-      text: `Click here to reset your password: http://localhost:3000/resetpassword/${resetToken}`
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    return res.status(200).json({ message: 'Password reset link sent to your email.' });
-
-  } catch (err) {
-    console.error('Error sending reset email:', err);
-    return res.status(500).json({ error: 'Something went wrong.' });
-  }
-});
-
 // Routes
 app.get('/', (req, res) => {
   res.render('index', { username: 'Hetvi' });
@@ -260,34 +213,44 @@ app.get('/login', (req, res) => {
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("Incoming login:", { email, password }); // Log the input password
+
   try {
-      // Find the user by email
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(400).json({ error: 'Invalid email or password' });
-      }
+    const user = await User.findOne({ email });
 
-      // Compare the provided password with the stored hashed password
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-          return res.status(400).json({ error: 'Invalid email or password' });
-      }
+    if (!user) {
+      console.log("❌ No user found");
+      return res.status(400).json({ error: 'Invalid email or password' });
+    }
 
-      // Store user information in session to maintain login state
-      req.session.user = {
-          id: user._id,
-          email: user.email,
-          firstname: user.firstname,
-      };
+    console.log("✅ User found:", user);
 
-      // Respond with success
-      return res.json({ message: 'Login successful' });
+    // Debugging: Log the password hash and the plain text password
+    console.log("Stored hashed password:", user.password);
+    console.log("Comparing with plain text password:", password);
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log("Password valid?", isPasswordValid);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: 'Invalid email or password' });
+    }
+
+    req.session.user = {
+      id: user._id,
+      email: user.email,
+      firstname: user.firstname
+    };
+
+    return res.json({ message: 'Login successful' });
 
   } catch (err) {
-      console.error('Error logging in:', err);
-      return res.status(500).json({ error: 'Something went wrong.' });
+    console.error('Server error during login:', err);
+    return res.status(500).json({ error: 'Something went wrong.' });
   }
 });
+
+
 
 
 
