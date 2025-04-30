@@ -1,11 +1,12 @@
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const submitButton = form.querySelector("button[type='submit']");
+document.getElementById('forgot-password-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const submitButton = event.target.querySelector("button[type='submit']");
     submitButton.disabled = true;
 
     const email = document.getElementById('email-input').value;
 
-    fetch('http://localhost:3000/reset-password', {
+    fetch('http://localhost:3000/forgotpassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })

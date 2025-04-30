@@ -17,27 +17,34 @@ client.connect().then(() => {
 // Signup Route (POST /signup)
 app.post('/index', async (req, res) => {
     const { firstName, email, password, phoneNumber } = req.body;
-
-    // Check if the user already exists in the database
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
-    const existingUser = await collection.findOne({ email });
-
-    if (existingUser) {
-        return res.status(400).json({ error: 'User already exists' });
-    }
-
-    // Create a new user
-    await collection.insertOne({
+  
+    try {
+      // Check if the email already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ error: 'Email already registered' });
+      }
+  
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      // Create a new user document
+      const newUser = new User({
         firstName,
         email,
-        password, // In production, password should be hashed!
+        password: hashedPassword,
         phoneNumber,
-        createdAt: new Date(),
-    });
-
-    res.status(201).json({ message: 'User created successfully' });
-});
+      });
+  
+      // Save the user
+      await newUser.save();
+  
+      res.status(201).json({ message: 'User registered successfully' });
+    } catch (err) {
+      console.error('Error:', err);
+      res.status(500).json({ error: 'Something went wrong' });
+    }
+  });
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

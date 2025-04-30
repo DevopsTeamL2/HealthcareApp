@@ -3,10 +3,11 @@ document.getElementById('form').addEventListener('submit', function(event) {
 
     // Collect the data from the form
     const formData = {
-        firstName: document.getElementById('firstname-input').value,
-        email: document.getElementById('email-input').value,
-        password: document.getElementById('password-input').value,
-        phoneNumber: document.getElementById('phone-number-input').value
+        firstname: document.getElementById('firstnameInput').value,
+        email: document.getElementById('emailInput').value,
+        password: document.getElementById('passwordInput').value,
+        repeatpassword: document.getElementById('repeatPasswordInput').value,
+        phonenumber: document.getElementById('phoneNumberInput').value
     };
 
     // Send a POST request to /index
@@ -23,7 +24,7 @@ document.getElementById('form').addEventListener('submit', function(event) {
             alert("Error: " + data.error);
         } else {
             alert("Signed up successfully!");
-            window.location.href = "/login"; // Redirect to login page after successful signup
+            window.location.href = "/login";
         }
     })
     .catch(error => {
