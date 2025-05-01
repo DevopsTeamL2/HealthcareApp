@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="/css/doctordashboard.css" />
+</head>
+<body>
+  <header>
+    <h1>Welcome, Dr. <%= username %>!</h1>
+    <a href="/logout" class="logout">Logout</a>
+  </header>
+
+  <main>
+    <div class="dashboard-title">Doctor Dashboard</div>
+    <div class="card-container">
+      <div class="card">
+        <h3>Appointments</h3>
+        <p>View and manage patient appointments.</p>
+        <a href="/appointments">View</a>
+      </div>
+
+      <div class="card">
+        <h3>Patient Records</h3>
+        <p>Access detailed health records and notes.</p>
+        <a href="/patients">Access</a>
+      </div>
+
+      <div class="card">
+        <h3>Messages</h3>
+        <p>Check messages from patients or staff.</p>
+        <a href="/messages">Inbox</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

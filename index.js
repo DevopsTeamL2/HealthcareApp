@@ -8,6 +8,7 @@ import bcrypt from 'bcrypt';
 import session from 'express-session'; 
 import crypto from 'crypto';
 
+
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -104,6 +105,8 @@ connectToMongoDB();
 app.get('/', (req, res) => {
   res.render('index', { username: 'Hetvi' });
 });
+
+
 
 app.get('/index', (req, res) => {
   res.render('index', { username: 'Guest' });
@@ -205,9 +208,40 @@ app.get('/signup', (req, res) => {
   res.render('signup');  // Renders signup.ejs
 });
 
+app.get('/doctordashboard', (req, res) => {
+  if (req.session.user && req.session.user.role === 'doctor') {
+    res.render('doctordashboard', { username: req.session.user.firstname });
+  } else {
+    res.redirect('/login');
+  }
+});
+
 
 app.get('/login', (req, res) => {
   res.render('login', { username: 'Guest' });
+});
+
+
+
+app.post('/doctor-login', (req, res) => {
+  const { email, password } = req.body;
+
+  // Hardcoded admin (doctor) login credentials
+  const doctorEmail = 'doctor@gmail.com';
+  const doctorPassword = 'doctor123';
+
+  if (email === doctorEmail && password === doctorPassword) {
+    // Set session for doctor
+    req.session.user = {
+      email: doctorEmail,
+      firstname: 'Doctor',
+      role: 'doctor',
+    };
+
+    return res.json({ message: 'Login successful', role: 'doctor' });
+  } else {
+    return res.status(401).json({ error: 'Invalid doctor credentials' });
+  }
 });
 
 app.post('/login', async (req, res) => {
@@ -242,6 +276,10 @@ app.post('/login', async (req, res) => {
       firstname: user.firstname
     };
 
+    if (user.role === 'doctor') {
+      return res.json({ message: 'Login successful', role: 'doctor' });
+    }
+
     return res.json({ message: 'Login successful' });
 
   } catch (err) {
@@ -250,7 +288,15 @@ app.post('/login', async (req, res) => {
   }
 });
 
-
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Logout failed:', err);
+      return res.status(500).send('Logout failed.');
+    }
+    res.redirect('/login'); // ✅ Redirect to login after logout
+  });
+});
 
 
 

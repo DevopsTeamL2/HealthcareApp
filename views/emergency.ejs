@@ -130,10 +130,12 @@
         
         <label for="message">Select Message:</label>
         <select id="message" onchange="toggleCustomMessage()">
-            <option value="Help, Am Having seizure">Help, Am Having seizure</option>
+            <option value="Seizure">Seizure</option>
+            <option value="Chest Pain">Chest Pain</option>
+            <option value="Dizziness">Dizziness</option>
+            <option value="Shortness of Breath">Dizziness</option>
             <option value="Faint Attack">Faint Attack</option>
-            <option value="I can't feel my legs">I can't feel my legs.</option>
-            <option value="other">Other (Custom Message)</option>
+            <option value="Other">Other (Custom Message)</option>
         </select>
 
         <!-- Custom message input field -->
@@ -166,21 +168,23 @@
             const email = document.getElementById('email').value;
             const messageSelect = document.getElementById('message');
             const customMessageInput = document.getElementById('customMessageInput');
-            let message;
+            
 
             if (!email) {
                 document.getElementById('status').innerText = 'Please enter a valid email!';
                 return;
             }
 
-            if (messageSelect.value === 'other') {
+            let message = '';
+
+            if (messageSelect.value === 'Other') {
                 message = customMessageInput.value.trim();
                 if (!message) {
                     document.getElementById('status').innerText = 'Please enter a custom message!';
                     return;
                 }
             } else {
-                message = messageSelect.value;
+                message = messageSelect.options[messageSelect.selectedIndex].text;
             }
 
             const templateParams = {

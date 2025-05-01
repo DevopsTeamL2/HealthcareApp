@@ -45,7 +45,7 @@ app.post('/index', async (req, res) => {
       res.status(500).json({ error: 'Something went wrong' });
     }
   });
-
+  
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
