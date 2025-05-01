@@ -21,7 +21,7 @@
     header {
       background-color: #fff;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
       padding: 20px 60px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -40,11 +40,40 @@
       width: 40px;
     }
 
+    nav {
+    display: flex;
+    gap: 35px;  /* Space between the nav links */
+    margin-left: 500px;  /* Space between logo and nav */
+    }
+
     nav a {
-      margin-left: 25px;
       text-decoration: none;
       color: #6a0dad;
       font-weight: 500;
+      font-size: 1.3rem;
+    }
+
+    /* Logout Button Styles */
+    .logout-btn {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background-color: #e63946;
+    }
+
+    /* Position the logout button at the top-right corner */
+    .logout-btn {
+      position: absolute;
+      top: 20px; /* Distance from the top of the header */
+      right: 20px; /* Distance from the right edge of the header */
     }
 
     .hero {
@@ -143,10 +172,11 @@
       <h2>MedCare</h2>
     </div>
     <nav>
-      <a href="#">Home</a>
+      <a href="/landingpage">Home</a>
       <a href="#about">About</a>
       <a href="/contact">Contact</a>
     </nav>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
   </header>
 
   <section class="hero">
@@ -181,5 +211,16 @@
   <footer>
     &copy; 2025 MedCare. All rights reserved.
   </footer>
+
+  <script>
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      // Clear the session storage or any authentication data
+      sessionStorage.removeItem('userToken');
+      localStorage.removeItem('userToken');
+      
+      // Redirect to login page or home
+      window.location.href = '/login'; // Adjust this based on your routing
+    });
+  </script>
 </body>
 </html>
