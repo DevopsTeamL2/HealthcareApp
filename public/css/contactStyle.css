@@ -15,6 +15,30 @@
     color: #333;
   }
   
+  .back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: white;
+    font-size: 24px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    line-height: 40px;
+    text-align: center;
+    padding: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    transition: background 0.3s ease;
+    z-index: 9999;
+  }
+
+  .back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
   /* Container for the Split Layout */
   .contact-container {
     display: flex;
@@ -113,6 +137,7 @@
   button[type="submit"]:hover {
     background-color: #5a0c9d;
   }
+  
   
   /* Responsive Adjustments */
   @media (max-width: 768px) {

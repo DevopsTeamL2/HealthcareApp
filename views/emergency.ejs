@@ -94,10 +94,35 @@
                 font-size: 0.9em;
                 padding: 8px;
             }
+
         }
+        /* Back Arrow Button */
+        .back-button {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                background: rgba(0, 0, 0, 0.6);
+                border: none;
+                color: white;
+                font-size: 24px;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                cursor: pointer;
+                line-height: 40px;
+                text-align: center;
+                padding: 0;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                transition: background 0.3s ease;
+            }
+
+            .back-button:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
     </style>
 </head>
 <body>
+    <button class="back-button" onclick="goBack()">←</button>
     <div class="container">
         <h2>Send Medical Notification</h2>
         <label for="email">Recipient Email:</label>
@@ -170,6 +195,9 @@
                     document.getElementById('status').innerText = 'Try again';
                     console.error('Error:', error);
                 });
+        }
+        function goBack() {
+            window.history.back();
         }
     </script>
 </body>
