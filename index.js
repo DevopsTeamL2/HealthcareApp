@@ -223,6 +223,7 @@ app.get('/login', (req, res) => {
 
 
 
+
 app.post('/doctor-login', (req, res) => {
   const { email, password } = req.body;
 
@@ -244,27 +245,19 @@ app.post('/doctor-login', (req, res) => {
   }
 });
 
+
+
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
-  console.log("Incoming login:", { email, password }); // Log the input password
 
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      console.log("❌ No user found");
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
-    console.log("✅ User found:", user);
-
-    // Debugging: Log the password hash and the plain text password
-    console.log("Stored hashed password:", user.password);
-    console.log("Comparing with plain text password:", password);
-
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log("Password valid?", isPasswordValid);
 
     if (!isPasswordValid) {
       return res.status(400).json({ error: 'Invalid email or password' });
@@ -273,20 +266,18 @@ app.post('/login', async (req, res) => {
     req.session.user = {
       id: user._id,
       email: user.email,
-      firstname: user.firstname
+      firstname: user.firstname,
+      role: user.role || 'user'  // fallback in case it's missing
     };
 
-    if (user.role === 'doctor') {
-      return res.json({ message: 'Login successful', role: 'doctor' });
-    }
-
-    return res.json({ message: 'Login successful' });
+    return res.json({ message: 'Login successful', role: user.role || 'user' });
 
   } catch (err) {
     console.error('Server error during login:', err);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 });
+
 
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
@@ -300,17 +291,19 @@ app.get('/logout', (req, res) => {
 
 
 
+
 app.get('/appointment', (req, res) => {
   res.render('appointment', { username: 'Guest' });
 });
 
 app.get('/landingpage', (req, res) => {
   if (req.session.user) {
-    res.render('landingpage', { username: req.session.user.firstName });
+    res.render('landingpage', { username: req.session.user.firstname });
   } else {
-    res.redirect('/login');
+    res.redirect('/login');  // Redirect to login if user is not authenticated
   }
 });
+
 
 
 // Start the server
