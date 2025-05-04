@@ -8,12 +8,20 @@
 </head>
 <body>
   <header>
-    <h1>Welcome, Dr. <%= username %>!</h1>
+    <h1>MedCare</h1>
     <a href="/logout" class="logout">Logout</a>
   </header>
 
   <main>
-    <div class="dashboard-title">Doctor Dashboard</div>
+    <!-- Enlarged hero section -->
+    <section class="hero">
+      <h2 class="hero-title">Welcome, Dr. <%= username %>!</h2>
+      <p class="hero-subtitle">
+        Providing quality healthcare, one patient at a time.
+      </p>
+    </section>
+
+    <!-- Enlarged Cards -->
     <div class="card-container">
       <div class="card">
         <h3>Appointments</h3>
@@ -25,12 +33,6 @@
         <h3>Patient Records</h3>
         <p>Access detailed health records and notes.</p>
         <a href="/patients">Access</a>
-      </div>
-
-      <div class="card">
-        <h3>Messages</h3>
-        <p>Check messages from patients or staff.</p>
-        <a href="/messages">Inbox</a>
       </div>
     </div>
   </main>
