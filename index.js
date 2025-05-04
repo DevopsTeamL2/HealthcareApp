@@ -71,7 +71,56 @@ app.get('/signup', (req, res) => {
 app.get('/appointment', (req, res) => {
   res.render('appointment', { username: 'Guest' });
 });
+app.post('appointment', async (req, res)=>{
+  const {fullname, email, phone, datetime, details} = req.body;
+//Handle invalid response(s)
+if (fullname == null){
+  return res.status(400).json({error: 'Fullname cannot be empty'});
+}
+if (email == null){
+  return res.status(400).json({error: 'Please imput your email address'});
+}
+ // Fullname validation
+ if (!fullname || fullname.trim() === "") {
+  errors.push("Fullname cannot be empty.");
+}
 
+// Email validation using regex
+const emailPattern = /^[\w.-]+@[\w.-]+\.\w{2,4}$/;
+if (!email || !emailPattern.test(email)) {
+  errors.push("Invalid email format.");
+}
+
+// UK phone number validation (starts with +44 or 0, followed by 10 digits)
+const phonePattern = /^(\+44|0)[789][01]\d{8}$/;
+if (!phone || !phonePattern.test(phone)) {
+  errors.push("Invalid phone number format.");
+}
+
+// Datetime validation
+const parsedDate = new Date(datetimeStr);
+if (!datetimeStr || isNaN(parsedDate.getTime())) {
+  errors.push("Invalid date and time format. Expected format: YYYY-MM-DD HH:MM:SS");
+}
+
+// Details validation
+if (!details || details.trim() === "") {
+  errors.push("Details cannot be empty.");
+}
+
+// Return results
+if (errors.length > 0) {
+  return { status: "error", messages: errors };
+} else {
+  return { status: "success", message: "All inputs are valid." };
+}
+
+
+ await appointment.save();
+
+ res.status(200).json({message: 'Appointment booked successfully!'});
+ 
+});
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
