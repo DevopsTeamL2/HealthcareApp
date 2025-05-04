@@ -9,6 +9,8 @@ import session from 'express-session';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -339,11 +341,67 @@ app.get('/logout', (req, res) => {
 });
 
 
-
-
-app.get('/appointment', (req, res) => {
-  res.render('appointment', { username: 'Guest' });
+// start of appoinment module
+const appointmentSchema = new mongoose.Schema({
+  fullname: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: { type: String, required: true },
+  datetime: { type: Date, required: true },
+  details: { type: String, required: true },
+  status: { type: String, default: 'pending' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  createdAt: { type: Date, default: Date.now }
 });
+const Appointment = mongoose.model('Appointment', appointmentSchema);
+// Add this route handler ABOVE any error handling middleware
+app.post('/appointments', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  try {
+    const { fullname, email, phone, datetime, details } = req.body;
+    
+    // Create new appointment document
+    const newAppointment = new Appointment({
+      fullname,
+      email,
+      phone,
+      datetime: new Date(datetime),
+      details,
+      user: req.session.user.id,
+      status: 'pending'
+    });
+
+    // Save to database
+    await newAppointment.save();
+    
+    // Send success response
+    res.json({ 
+      success: true, 
+      message: 'Appointment booked successfully!',
+      appointmentId: newAppointment._id
+    });
+  } catch (error) {
+    console.error('Error saving appointment:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to book appointment. Please try again.' 
+    });
+  }
+});
+
+// Add this route ABOVE your server start code
+app.get('/appointment', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  res.render('appointment', { 
+    username: req.session.user.firstname,
+    user: req.session.user // Pass user data to pre-fill form
+  });
+});
+// end of appointment module
 
 app.get('/landingpage', (req, res) => {
   if (req.session.user) {
