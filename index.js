@@ -7,8 +7,6 @@ import User from './models/User.js';
 import bcrypt from 'bcrypt';
 import session from 'express-session'; 
 import crypto from 'crypto';
-
-
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -199,9 +197,60 @@ app.get('/contact', (req, res) => {
   res.render('contact', { username: 'Guest' });
 });
 
-app.get('/emergency', (req, res) => {
-  res.render('emergency', { username: 'Guest' });
+// Emergency Notification Schema
+const emergencySchema = new Schema({
+  email: { type: String, required: true },
+  message: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now },
+  status: { type: String, default: 'pending' } // pending, sent, failed
 });
+
+const Emergency = model('Emergency', emergencySchema, 'emergency');
+
+app.get('/emergency', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  res.render('emergency', { username: req.session.user.firstname });
+});
+
+app.post('/send-emergency', async (req, res) => {
+  try {
+    const { email, message } = req.body;
+
+    // Validate input
+    if (!email || !message) {
+      return res.status(400).json({ success: false, error: 'Email and message are required' });
+    }
+
+    // Create new emergency record
+    const newEmergency = new Emergency({
+      email,
+      message
+    });
+
+    // Save to database
+    await newEmergency.save();
+
+    // Here you could also add email sending functionality if needed
+    // using nodemailer or your preferred email service
+
+    res.json({ 
+      success: true, 
+      message: 'Emergency notification saved successfully!',
+      data: newEmergency
+    });
+
+  } catch (error) {
+    console.error('Error saving emergency notification:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to save emergency notification' 
+    });
+  }
+});
+// end of emergency module code block
+
 
 // Route for displaying the signup page
 app.get('/signup', (req, res) => {

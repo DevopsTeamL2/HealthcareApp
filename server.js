@@ -49,3 +49,23 @@ app.post('/index', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+
+// added route for emergency module
+
+app.post('/send-emergency', async (req, res) => {
+    const { email, message } = req.body;
+
+    if (!email || !message) {
+        return res.status(400).json({ success: false, error: 'Both email and message are required.' });
+    }
+
+    try {
+        const newAlert = new Emergency({ email, message });
+        await newAlert.save();
+        res.json({ success: true, message: 'Emergency message sent successfully.' });
+    } catch (err) {
+        console.error('Error saving emergency message:', err);
+        res.status(500).json({ success: false, error: 'Internal server error.' });
+    }
+});

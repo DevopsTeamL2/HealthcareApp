@@ -1,17 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Notification App</title>
-    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <style>
-        /* General Styles */
         body {
             font-family: 'Poppins', 'Segoe UI', Geneva, sans-serif;
             margin: 0;
             padding: 0;
-            background: url('https://cdn.pixabay.com/photo/2019/07/30/15/57/dentist-4373290_1280.jpg') no-repeat center center/cover; /* Full-page background image */
+            background: url('https://cdn.pixabay.com/photo/2019/07/30/15/57/dentist-4373290_1280.jpg') no-repeat center center/cover;
             color: white;
             display: flex;
             justify-content: center;
@@ -20,14 +19,14 @@
         }
 
         .container {
-            background: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay for contrast */
+            background: rgba(0, 0, 0, 0.6);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 500px;
             text-align: center;
-            backdrop-filter: blur(5px); /* Adds a frosted glass effect */
+            backdrop-filter: blur(5px);
         }
 
         h2 {
@@ -47,18 +46,16 @@
             margin: 10px 0;
             border: none;
             border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent for contrast */
+            background-color: rgba(255, 255, 255, 0.8);
             color: black;
             font-size: 1em;
         }
 
         button {
-            background-color: #81c784; /* Cool green button */
+            background-color: #81c784;
             border: none;
             color: white;
             padding: 12px 24px;
-            text-align: center;
-            text-decoration: none;
             font-size: 1em;
             border-radius: 5px;
             cursor: pointer;
@@ -66,7 +63,7 @@
         }
 
         button:hover {
-            background-color: #4caf50; /* Darker green on hover */
+            background-color: #4caf50;
         }
 
         #customMessage {
@@ -80,7 +77,29 @@
             color: #fff;
         }
 
-        /* Responsive Design */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            color: white;
+            font-size: 24px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            line-height: 40px;
+            text-align: center;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            transition: background 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 15px;
@@ -90,35 +109,21 @@
                 font-size: 1.2em;
             }
 
-            input[type=email], select, input[type=text], button {
+            input, select, button {
                 font-size: 0.9em;
                 padding: 8px;
             }
-
         }
-        /* Back Arrow Button */
-        .back-button {
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                background: rgba(0, 0, 0, 0.6);
-                border: none;
-                color: white;
-                font-size: 24px;
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                cursor: pointer;
-                line-height: 40px;
-                text-align: center;
-                padding: 0;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-                transition: background 0.3s ease;
-            }
+        
+        .success {
+            color: #4caf50;
+        }
+        
+        .error {
+            color: #f44336;
+        }
 
-            .back-button:hover {
-                background: rgba(255, 255, 255, 0.2);
-            }
+        
     </style>
 </head>
 <body>
@@ -144,71 +149,102 @@
             <option value="Other">Other (Custom Message)</option>
         </select>
 
-        <!-- Custom message input field -->
         <div id="customMessage">
             <label for="customMessageInput">Enter your custom message:</label>
             <input type="text" id="customMessageInput" placeholder="Type your message here">
         </div>
 
-        <button onclick="sendEmail()">Send</button>
+        <button onclick="handleSendClick()">Send</button>
         <p id="status"></p>
+        <p id="responseMessage"></p>
     </div>
 
+   
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
     <script>
-        (function(){
-            emailjs.init("KeIg2pCjxrol_35ZI"); // Replace with your EmailJS Public Key
+        // Initialize EmailJS with your Public Key
+        (function() {
+            emailjs.init("KeIg2pCjxrol_35ZI"); // Your EmailJS user ID
         })();
 
         function toggleCustomMessage() {
-            const messageSelect = document.getElementById('message');
-            const customMessageDiv = document.getElementById('customMessage');
-
-            if (messageSelect.value === 'other') {
-                customMessageDiv.style.display = 'block';
-            } else {
-                customMessageDiv.style.display = 'none';
-            }
+            const selected = document.getElementById('message').value;
+            const customDiv = document.getElementById('customMessage');
+            customDiv.style.display = selected === 'Other' ? 'block' : 'none';
         }
 
-        function sendEmail() {
-            const email = document.getElementById('email').value;
-            const messageSelect = document.getElementById('message');
-            const customMessageInput = document.getElementById('customMessageInput');
-            
-
-            if (!email) {
-                document.getElementById('status').innerText = 'Please enter a valid email!';
-                return;
-            }
-
-            let message = '';
-
-            if (messageSelect.value === 'Other') {
-                message = customMessageInput.value.trim();
-                if (!message) {
-                    document.getElementById('status').innerText = 'Please enter a custom message!';
-                    return;
+        function sendToBackend(email, message) {
+            return fetch('/send-emergency', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, message })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
-            } else {
-                message = messageSelect.options[messageSelect.selectedIndex].text;
-            }
+                return response.json();
+            });
+        }
 
+        function sendViaEmailJS(email, message) {
             const templateParams = {
                 to_email: email,
                 message: message
             };
+            
+            return emailjs.send("service_95nptbn", "template_nr9lvbg", templateParams);
+        }
 
-            emailjs.send("service_95nptbn", "template_nr9lvbg", templateParams)
-                .then(response => {
-                    document.getElementById('status').innerText = 'Notification sent successfully!';
-                }, error => {
-                    document.getElementById('status').innerText = 'Try again';
+        function handleSendClick() {
+            const email = document.getElementById('email').value;
+            let message = document.getElementById('message').value;
+            
+            if (message === 'Other') {
+                message = document.getElementById('customMessageInput').value;
+                if (!message) {
+                    document.getElementById('status').innerText = 'Please enter a custom message';
+                    return;
+                }
+            }
+            
+            if (!email) {
+                document.getElementById('status').innerText = 'Please enter an email address';
+                return;
+            }
+            
+            document.getElementById('status').innerText = 'Sending notification...';
+            
+            // Call both functions sequentially
+            sendToBackend(email, message)
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('responseMessage').textContent = 'Notification saved to database!';
+                        document.getElementById('responseMessage').className = 'success';
+                        return sendViaEmailJS(email, message);
+                    } else {
+                        throw new Error(data.error || 'Database save failed');
+                    }
+                })
+                .then(() => {
+                    document.getElementById('status').innerText = 'Email sent successfully!';
+                    document.getElementById('email').value = '';
+                    document.getElementById('customMessageInput').value = '';
+                })
+                .catch(error => {
                     console.error('Error:', error);
+                    document.getElementById('responseMessage').textContent = error.message || 'Failed to send notification';
+                    document.getElementById('responseMessage').className = 'error';
                 });
         }
+
         function goBack() {
             window.history.back();
         }
     </script>
+
 </body>
 </html>
