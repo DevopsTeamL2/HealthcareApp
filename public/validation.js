@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
+        // Clear previous error message
+        error_message.innerText = '';
+
         let errors = getSignUpFormErrors(
             firstname_input.value,
             email_input.value,
@@ -38,14 +41,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    alert("Error: " + data.error);
+                    error_message.innerText = data.error;  // Display error message from backend (like "Email already in use")
                 } else {
                     alert("Signed up successfully!");
-                    window.location.href = "/login";
+                    window.location.href = "/login";  // Redirect after successful signup
                 }
             })
             .catch(error => {
-                alert("Error: " + error.message);
+                error_message.innerText = "Error: " + error.message;  // Display fetch failure error
             });
         }
     });
@@ -56,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!firstname) errors.push("First Name is required");
         if (!email) errors.push("Email is required");
         if (!password) errors.push("Password is required");
-        if (password.length < 8) errors.push("Password must be at least 8 characters");
         if (password !== repeatpassword) errors.push("Passwords do not match");
         if (!phonenumber) errors.push("Phone Number is required");
 

@@ -1,33 +1,67 @@
-document.getElementById('form').addEventListener('submit', function(event) {
-    event.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('form');
+    const firstname_input = document.getElementById('firstnameInput');
+    const email_input = document.getElementById('emailInput');
+    const password_input = document.getElementById('passwordInput');
+    const repeat_password_input = document.getElementById('repeatPasswordInput');
+    const phone_number_input = document.getElementById('phoneNumberInput');
+    const error_message = document.getElementById('error-message');
 
-    // Collect the data from the form
-    const formData = {
-        firstname: document.getElementById('firstnameInput').value,
-        email: document.getElementById('emailInput').value,
-        password: document.getElementById('passwordInput').value,
-        repeatpassword: document.getElementById('repeatPasswordInput').value,
-        phonenumber: document.getElementById('phoneNumberInput').value
-    };
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
 
-    // Send a POST request to /index
-    fetch('http://localhost:3000/index', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert("Error: " + data.error);
+        // Clear previous error message
+        error_message.innerText = '';
+
+        let errors = getSignUpFormErrors(
+            firstname_input.value,
+            email_input.value,
+            password_input.value,
+            repeat_password_input.value,
+            phone_number_input.value
+        );
+
+        if (errors.length > 0) {
+            error_message.innerText = errors.join(". ");
         } else {
-            alert("Signed up successfully!");
-            window.location.href = "/login";
+            // Proceed with form submission
+            const formData = {
+                firstname: firstname_input.value,
+                email: email_input.value,
+                password: password_input.value,
+                repeatpassword: repeat_password_input.value,
+                phonenumber: phone_number_input.value,
+            };
+
+            fetch('/index', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    error_message.innerText = data.error;  // Show error message if backend returns error
+                } else {
+                    alert("Signed up successfully!");
+                    window.location.href = "/login";  // Redirect after successful signup
+                }
+            })
+            .catch(error => {
+                error_message.innerText = "Error: " + error.message;  // Show error message for fetch failure
+            });
         }
-    })
-    .catch(error => {
-        alert("Error: " + error.message);
     });
+
+    function getSignUpFormErrors(firstname, email, password, repeatpassword, phonenumber) {
+        let errors = [];
+
+        if (!firstname) errors.push("First Name is required");
+        if (!email) errors.push("Email is required");
+        if (!password) errors.push("Password is required");
+        if (password !== repeatpassword) errors.push("Passwords do not match");
+        if (!phonenumber) errors.push("Phone Number is required");
+
+        return errors;
+    }
 });
