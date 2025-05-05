@@ -6,14 +6,10 @@ import { MongoClient } from 'mongodb';
 import User from './models/User.js';
 import bcrypt from 'bcrypt';
 import session from 'express-session'; 
-import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 const app = express();
 const { Schema, model } = mongoose;
@@ -61,7 +57,6 @@ const blogSchema = new Schema({
 
 const Blog = model('Blog', blogSchema);
 
-
 // Create a new blog post object
 const article = new Blog({
   title: 'POST 2!',
@@ -84,7 +79,6 @@ if(blog){
 }else {
   console.log("DOES NOT EXITST")
 }
-
 
 
 // connect to MongoDB
@@ -117,32 +111,37 @@ app.post('/index', async (req, res) => {
 
   // Handle validation and signup logic
   if (password !== repeatpassword) {
-      return res.status(400).json({ error: 'Passwords do not match' });
+    return res.status(400).json({ error: 'Passwords do not match' });
   }
 
   try {
-      // Hash the password before saving the user
-      const hashedPassword = await bcrypt.hash(password, 10);
+    // Check if the email already exists in the database
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already in use' }); // Return specific error message if email is found
+    }
 
-      const newUser = new User({
-          firstname,
-          email,
-          password: hashedPassword,
-          phonenumber,
-      });
+    // Hash the password before saving the user
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Save the user to the database
-      await newUser.save();
+    // Create a new user document
+    const newUser = new User({
+      firstname,
+      email,
+      password: hashedPassword,
+      phonenumber,
+    });
 
-      // Respond with success
-      res.status(200).json({ message: 'User created successfully!' });
+    // Save the user to the database
+    await newUser.save();
+
+    // Respond with success
+    res.status(200).json({ message: 'User created successfully!' });
   } catch (err) {
-      console.error('Error creating user:', err); // Log error for debugging
-      // Respond with a 500 status and the error message
-      res.status(500).json({ error: 'Something went wrong during signup.' });
+    console.error('Error creating user:', err); // Log error for debugging
+    res.status(500).json({ error: 'Something went wrong during signup.' }); // General error message
   }
 });
-
 
 
 app.get('/success', (req, res) => {
@@ -150,7 +149,10 @@ app.get('/success', (req, res) => {
 });
 
 
-// Handle Password Reset
+app.get('/forgotpassword', (req, res) => {
+  res.render('forgotpassword', { username: 'Guest' });
+});
+
 app.post('/forgotpassword', async (req, res) => {
   const { email } = req.body;
 
@@ -158,42 +160,48 @@ app.post('/forgotpassword', async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ error: 'Email not found' });
+      return res.status(400).json({ message: 'Email not found' });
     }
 
-    // Generate a password reset token (could use JWT or custom token)
-    const resetToken = Math.floor(Math.random() * 1000000); // simple example
+    // Store email in session
+    req.session.resetEmail = email;
 
-    // Send an email to the user with the reset link
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'your-email@gmail.com',
-        pass: 'your-email-password'
-      }
-    });
-
-    const mailOptions = {
-      from: 'your-email@gmail.com',
-      to: user.email,
-      subject: 'Password Reset',
-      text: `Click here to reset your password: http://localhost:3000/forgotpassword/${resetToken}`
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    // Save the reset token (store it in the DB or use it in another way)
-    user.resetToken = resetToken;
-    await user.save();
-
-    return res.status(200).json({ message: 'Password reset link sent to your email.' });
-
+    res.status(200).json({ message: 'Redirecting to reset password' });
   } catch (err) {
-    console.error('Error sending reset email:', err);
-    return res.status(500).json({ error: 'Something went wrong.' });
+    console.error('Error:', err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
 });
 
+
+
+app.get('/resetpassword', (req, res) => {
+  res.render('resetpassword', { username: 'Guest' });
+});
+
+app.post('/resetpassword', async (req, res) => {
+  const { newPassword } = req.body;
+  const email = req.session.resetEmail;
+
+  if (!email) {
+    return res.status(400).json({ message: 'No email in session.' });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.findOneAndUpdate({ email }, {
+      password: hashedPassword,
+    });
+
+    req.session.resetEmail = null; // Clear session
+
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (err) {
+    console.error('Reset error:', err);
+    res.status(500).json({ message: 'Failed to reset password.' });
+  }
+});
 
 app.get('/contact', (req, res) => {
   res.render('contact', { username: 'Guest' });

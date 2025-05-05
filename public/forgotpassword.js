@@ -1,29 +1,22 @@
-document.getElementById('forgot-password-form').addEventListener('submit', function(event) {
+document.getElementById('forgot-password-form').addEventListener('submit', async function (event) {
     event.preventDefault();
+    const email = document.getElementById('emailInput').value;
 
-    const submitButton = event.target.querySelector("button[type='submit']");
-    submitButton.disabled = true;
-
-    const email = document.getElementById('email-input').value;
-
-    fetch('http://localhost:3000/forgotpassword', {
+    // Send the email to the server and redirect
+    const response = await fetch('/forgotpassword', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert("Error: " + data.error);
-        } else {
-            alert("Password reset link sent to your email.");
-            window.location.href = "/login";
-        }
-    })
-    .catch(error => {
-        alert("Error: " + error.message);
-    })
-    .finally(() => {
-        submitButton.disabled = false;
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
     });
+
+    const data = await response.json();
+
+    if (response.ok) {
+        // Redirect to reset password page
+        window.location.href = '/resetpassword';
+    } else {
+        alert(data.message || 'Something went wrong.');
+    }
 });
