@@ -9,7 +9,7 @@
 <body>
   <header>
     <h1>MedCare</h1>
-    <a href="/logout" class="logout">Logout</a>
+    <button class="logout" onclick="window.location.href='/logout'">Logout</button>
   </header>
 
   <main>
@@ -23,18 +23,103 @@
 
     <!-- Enlarged Cards -->
     <div class="card-container">
-      <div class="card">
+      <!-- Appointments Section -->
+      <div class="card" id="view-appointments">
         <h3>Appointments</h3>
         <p>View and manage patient appointments.</p>
-        <a href="/appointments">View</a>
+        <div class="button-container">
+          <button onclick="loadAppointments()">View</button>
+          <button onclick="clearAppointments()">Clear</button>
+        </div>
       </div>
-
-      <div class="card">
+    
+      <!-- Patients Section -->
+      <div class="card" id="view-patients">
         <h3>Patient Records</h3>
         <p>Access detailed health records and notes.</p>
-        <a href="/patients">Access</a>
+        <div class="button-container">
+        <button onclick="loadPatients()">Access</button>
+        <button onclick="clearPatients()">Clear</button>
+      </div>
       </div>
     </div>
+
+    <!-- Containers for Tables -->
+<div id="appointments-table"></div>
+<div id="patients-table"></div>
+    
+    <div id="data-table-container">
+      <!-- Tables for data will be dynamically inserted here -->
+    </div>
+    
+    <script>
+      // Load Appointments
+      async function loadAppointments() {
+        try {
+          const response = await fetch('/appointments');
+          if (!response.ok) {
+            throw new Error('Failed to fetch appointments');
+          }
+    
+          const appointments = await response.json();
+          let tableHTML = '<table border="1"><tr><th>Name</th><th>Email</th><th>Phone</th><th>Date</th><th>Details</th><th>Status</th></tr>';
+    
+          appointments.forEach(app => {
+            tableHTML += `<tr>
+              <td>${app.fullname}</td>
+              <td>${app.email}</td>
+              <td>${app.phone}</td>
+              <td>${new Date(app.datetime).toLocaleString()}</td>
+              <td>${app.details}</td>
+              <td>${app.status}</td>
+            </tr>`;
+          });
+    
+          tableHTML += '</table>';
+          document.getElementById('appointments-table').innerHTML = tableHTML;
+        } catch (error) {
+          console.error('Error loading appointments:', error);
+          document.getElementById('appointments-table').innerHTML = '<p>Failed to load appointments.</p>';
+        }
+      }
+    
+      // Clear Appointments Table
+      function clearAppointments() {
+        document.getElementById('appointments-table').innerHTML = ''; // Clear the table content
+      }
+    
+      // Load Patients
+      async function loadPatients() {
+        try {
+          const response = await fetch('/patients');
+          if (!response.ok) {
+            throw new Error('Failed to fetch patient records');
+          }
+    
+          const patients = await response.json();
+          let tableHTML = '<table border="1"><tr><th>Name</th><th>Email</th><th>Phone</th></tr>';
+    
+          patients.forEach(patient => {
+            tableHTML += `<tr>
+              <td>${patient.firstname}</td>
+              <td>${patient.email}</td>
+              <td>${patient.phonenumber}</td>
+            </tr>`;
+          });
+    
+          tableHTML += '</table>';
+          document.getElementById('patients-table').innerHTML = tableHTML;
+        } catch (error) {
+          console.error('Error loading patients:', error);
+          document.getElementById('patients-table').innerHTML = '<p>Failed to load patient records.</p>';
+        }
+      }
+    
+      // Clear Patients Table
+      function clearPatients() {
+        document.getElementById('patients-table').innerHTML = ''; // Clear the table content
+      }
+    </script>
   </main>
 </body>
 </html>

@@ -100,7 +100,16 @@ app.get('/', (req, res) => {
   res.render('index', { username: 'Hetvi' });
 });
 
-
+app.get('/patients', async (req, res) => {
+  try {
+    // Fetch users where the role is 'user' (exclude admins/doctors)
+    const patients = await User.find({ role: 'user' }).select('firstname email phonenumber');
+    res.json(patients);
+  } catch (error) {
+    console.error('Error fetching patients:', error);
+    res.status(500).json({ error: 'Failed to fetch patient records.' });
+  }
+});
 
 app.get('/index', (req, res) => {
   res.render('index', { username: 'Guest' });
@@ -400,14 +409,22 @@ app.post('/appointments', async (req, res) => {
 });
 
 // Add this route ABOVE your server start code
-app.get('/appointment', (req, res) => {
+app.get('/appointments', async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/login');
+    return res.status(401).json({ error: 'Not authenticated' });
   }
-  res.render('appointment', { 
-    username: req.session.user.firstname,
-    user: req.session.user // Pass user data to pre-fill form
-  });
+
+  try {
+    // Fetch all appointments (or filter based on user if needed)
+    const appointments = await Appointment.find()
+      .select('fullname email phone datetime details status')
+      .sort({ datetime: 1 }); // Sort by date
+
+    res.json(appointments);
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    res.status(500).json({ error: 'Failed to fetch appointments.' });
+  }
 });
 // end of appointment module
 
