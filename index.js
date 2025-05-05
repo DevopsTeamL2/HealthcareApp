@@ -2,11 +2,14 @@ import express from 'express'
 import path from 'path'
 import nodemailer from 'nodemailer'
 import mongoose from 'mongoose'
-import { MongoClient } from 'mongodb';
 import User from './models/User.js';
 import bcrypt from 'bcrypt';
 import session from 'express-session'; 
 import { fileURLToPath } from 'url';
+
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,11 +18,8 @@ const app = express();
 const { Schema, model } = mongoose;
 
 
-// Replace with your actual credentials
-const uri = "mongodb+srv://healthcareapp:GroupL2@healthcareapp.6zjsyou.mongodb.net/?retryWrites=true&w=majority&appName=HealthcareApp";
-mongoose.connect(uri)
+const uri = process.env.MONGODB_URI;
 
-const client = new MongoClient(uri);
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -39,61 +39,16 @@ app.use(session({
 }));
 
 
-const blogSchema = new Schema({
-  title: String,
-  slug: String,
-  published: Boolean,
-  author: String,
-  content: String,
-  tags: [String],
-  createdAt: Date,
-  updatedAt: Date,
-  comments: [{
-    user: String,
-    content: String,
-    votes: Number
-  }]
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log("✅ Mongoose connected to MongoDB Atlas!");
+}).catch((err) => {
+  console.error("❌ Mongoose connection failed:", err);
 });
 
-const Blog = model('Blog', blogSchema);
 
-// Create a new blog post object
-const article = new Blog({
-  title: 'POST 2!',
-  slug: 'awesome-post',
-  published: true,
-  content: 'This is the best post ever',
-  tags: ['featured', 'announcement'],
-});
-// Insert the article in our MongoDB database
-await article.save();
-
-const retrievedData = await Blog.findById("6810b41ac3f663168ad6f5eb").exec();
-console.log(retrievedData);
-
-const blog = await Blog.exists({ title: 'POST !' })
-if(blog){
-  console.log("ESITS!!!!")
-
-  console.log(blog)
-}else {
-  console.log("DOES NOT EXITST")
-}
-
-
-// connect to MongoDB
-async function connectToMongoDB() {
-  try {
-      await client.connect();
-      console.log("✅ Connected to MongoDB Atlas!");
-  } catch (err) {
-      console.error("❌ Connection failed:", err);
-  } finally {
-      await client.close();
-  }
-}
-
-connectToMongoDB();
 
 // Routes
 app.get('/', (req, res) => {
