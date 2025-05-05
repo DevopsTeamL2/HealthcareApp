@@ -312,6 +312,9 @@ app.get('/logout', (req, res) => {
   });
 });
 
+app.get('/appointment', (req, res) => {
+  res.render('appointment'); 
+});
 
 // start of appoinment module
 const appointmentSchema = new mongoose.Schema({
@@ -324,9 +327,10 @@ const appointmentSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   createdAt: { type: Date, default: Date.now }
 });
+
 const Appointment = mongoose.model('Appointment', appointmentSchema);
 // Add this route handler ABOVE any error handling middleware
-app.post('/appointments', async (req, res) => {
+app.post('/appointment', async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
@@ -362,6 +366,7 @@ app.post('/appointments', async (req, res) => {
     });
   }
 });
+
 
 // Add this route ABOVE your server start code
 app.get('/appointments', async (req, res) => {
