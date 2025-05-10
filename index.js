@@ -3,7 +3,7 @@ import path from 'path'
 import nodemailer from 'nodemailer'
 import mongoose from 'mongoose'
 import User from './models/User.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import session from 'express-session'; 
 import { fileURLToPath } from 'url';
 
