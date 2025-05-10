@@ -16,7 +16,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Running test...\" && exit 0"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/DevopsTeamL2/HealthcareApp/issues"
   },
-  "homepage": "https://github.com/DevopsTeamL2/HealthcareApp#readme"
+  "homepage": "https://github.com/DevopsTeamL2/HealthcareApp#readme",
+  "devDependencies": {
+    "mocha": "^11.2.2"
+  }
 }
