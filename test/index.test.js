@@ -1,4 +1,4 @@
-import { strict } from "assert";
+import { strict as assert } from "assert";
 
 describe("Sample Test Suite", () => {
   it("should return true for 1 + 1 === 2", () => {
