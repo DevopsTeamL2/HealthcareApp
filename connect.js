@@ -1,19 +1,9 @@
-const { MongoClient } = require('mongodb');
+import dotenv from 'dotenv';
+import { MongoClient } from 'mongodb';
+dotenv.config();
 
-// Replace with your actual credentials
-const uri = "mongodb+srv://healthcareapp:GroupL2@healthcareapp.6zjsyou.mongodb.net/?retryWrites=true&w=majority&appName=HealthcareApp";
+const uri = process.env.MONGODB_URI;
 
 const client = new MongoClient(uri);
-
-async function run() {
-    try {
-        await client.connect();
-        console.log("✅ Connected to MongoDB Atlas!");
-    } catch (err) {
-        console.error("❌ Connection failed:", err);
-    } finally {
-        await client.close();
-    }
-}
 
 run();
