@@ -52,7 +52,6 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 
-
 // Routes
 app.get('/', (req, res) => {
   res.render('index', { username: 'Hetvi' });
@@ -60,39 +59,36 @@ app.get('/', (req, res) => {
 
 app.post('/send-email', async (req, res) => {
   const { name, email, message } = req.body;
-
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'All fields are required.' });
   }
-
+ 
   try {
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 465,          // use 587 + secure:false if you prefer STARTTLS
-      secure: true,
+      port: 587,           
+      secure: false,       
+      requireTLS: true,
       auth: { user: MAIL_USER, pass: MAIL_PASS }
     });
-
+ 
     await transporter.sendMail({
-      /*  Gmail will reject arbitrary “From” addresses. 
-          Keep it as your own mailbox and let “reply-to” point at the visitor. */
       from: `"Medical Center Contact" <${MAIL_USER}>`,
-      replyTo: email,                       // click “Reply” → replies to the visitor
-      to: MAIL_USER,                        // deliver to yourself
-      subject: `Contact-form message from ${name}`,   // shows sender’s name
+      replyTo: email,
+      to: MAIL_USER,
+      subject: `Contact-form message from ${name}`,
       text:
-    `Name : ${name}
-    Email: ${email}
-    
-    ${message}`,
+`Name : ${name}
+Email: ${email}
+ 
+${message}`,
       html: `
-        <p><strong>Name :</strong> ${name}<br>
-           <strong>Email:</strong> ${email}</p>
-        <p>${message.replace(/\n/g, '<br>')}</p>
+<p><strong>Name :</strong> ${name}<br>
+<strong>Email:</strong> ${email}</p>
+<p>${message.replace(/\n/g, '<br>')}</p>
       `
     });
-    
-
+ 
     return res.status(200).json({ message: 'Mail sent!' });
   } catch (err) {
     console.error('Nodemailer error:', err);
